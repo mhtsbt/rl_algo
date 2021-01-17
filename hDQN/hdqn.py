@@ -181,8 +181,11 @@ class hDQN:
     def __init__(self):
         self.env = gym.make("MontezumaRevengeNoFrameskip-v4")
 
+        # only use the relevant action for the game
+        self.actions = [1, 2, 3, 4, 5]
+
         self.meta_controller = MetaController()
-        self.controller = Controller(action_space=self.env.action_space)
+        self.controller = Controller(action_space=gym.spaces.Discrete(len(self.actions)))
 
     def _process_state(self, state):
         state = cv2.resize(state, (84, 84))
@@ -217,7 +220,9 @@ class hDQN:
             prev_controller_state = self.controller.process_state(prev_state, subgoal_mask)
 
             action = self.controller.act(state=prev_controller_state)
-            _, reward, done, info = self.env.step(action=action)
+            _, reward, done, info = self.env.step(action=self.actions[action])
+
+            self.env.render()
 
             result_env_state = self.env.ale.getScreenGrayscale()
             result_state = self._process_state(result_env_state)
