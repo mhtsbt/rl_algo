@@ -222,8 +222,6 @@ class hDQN:
             action = self.controller.act(state=prev_controller_state)
             _, reward, done, info = self.env.step(action=self.actions[action])
 
-            self.env.render()
-
             result_env_state = self.env.ale.getScreenGrayscale()
             result_state = self._process_state(result_env_state)
             result_controller_state = self.controller.process_state(result_state, subgoal_mask)
