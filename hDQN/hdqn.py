@@ -97,6 +97,9 @@ class Controller:
             action = values.argmax().item()
             return action
 
+    def save(self):
+        torch.save(self.model, "controller.pth")
+
     def act(self, state):
 
         if np.random.rand() < self.eps:
@@ -189,6 +192,7 @@ class hDQN:
     def run(self, n_steps):
         done = True
         subgoal_reached = False
+        lives = 6
         prev_env_state, prev_state, subgoal_mask, subgoal = None, None, None, None
 
         subgoal_history = deque(maxlen=100)
@@ -205,7 +209,7 @@ class hDQN:
 
                 subgoal, subgoal_mask = self.meta_controller.sample_subgoal(state=prev_state)
 
-                print(f"steps: {step_id} success: {np.average(subgoal_history)}")
+                print(f"steps: {step_id} success: {np.round(np.average(subgoal_history),2)} eps: {np.round(self.controller.eps, 2)}")
 
             if subgoal_reached:
                 subgoal, subgoal_mask = self.meta_controller.sample_subgoal(state=prev_state)
@@ -222,16 +226,23 @@ class hDQN:
             subgoal_reached = self.meta_controller.subgoal_validator(result_state, subgoal_id=subgoal)
 
             if subgoal_reached:
-                #print(f"subgoal {self.meta_controller.subgoals[subgoal].name} reached")
                 subgoal_history.append(1)
 
-            self.controller.buffer.store(state=prev_controller_state, next_state=result_controller_state, action=action, reward=subgoal_reached, done=subgoal_reached)
+            controller_done = subgoal_reached
+
+            if info['ale.lives'] < lives:
+                lives = info['ale.lives']
+                controller_done = True
+
+            self.controller.buffer.store(state=prev_controller_state, next_state=result_controller_state, action=action, reward=subgoal_reached, done=controller_done)
 
             if step_id % int(80e3) == 0:
                 print("syncing models")
                 self.controller.sync_models()
+                self.controller.save()
 
-            if step_id > 100:
-                self.controller.update()
+            if step_id > int(10e3):
+                if step_id % 4 == 0:
+                    self.controller.update()
 
             prev_state = result_state
