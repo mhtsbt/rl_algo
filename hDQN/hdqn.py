@@ -54,6 +54,8 @@ class hDQN:
             action = self.controller.act(state=prev_controller_state)
             _, reward, done, info = self.env.step(action=self.actions[action])
 
+            self.env.render()
+
             result_env_state = self.env.ale.getScreenGrayscale()
             result_state = self._process_state(result_env_state)
             result_controller_state = self.controller.process_state(result_state, subgoal_mask)
@@ -71,12 +73,13 @@ class hDQN:
 
             self.controller.buffer.store(state=prev_controller_state, next_state=result_controller_state, action=action, reward=subgoal_reached, done=controller_done)
 
-            if step_id % int(80e3) == 0:
-                print("syncing models")
+            if step_id % int(8e3) == 0:
                 self.controller.sync_models()
+
+            if step_id % int(100e3):
                 self.controller.save()
 
-            if step_id > int(10e3):
+            if step_id > int(100e3):
                 if step_id % 4 == 0:
                     self.controller.update()
 

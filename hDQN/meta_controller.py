@@ -45,11 +45,11 @@ class SubGoal:
 class MetaController:
     def __init__(self):
         self.subgoals = []
-        self.subgoals.append(SubGoal(name="middle-ladder", imgsize=84, width=3, height=3, originx=40, originy=48))
+        #self.subgoals.append(SubGoal(name="middle-ladder", imgsize=84, width=3, height=3, originx=40, originy=48))
         #self.subgoals.append(SubGoal(name="top-left-door", imgsize=84, width=4, height=10, originx=13, originy=25))
         #self.subgoals.append(SubGoal(name="top-right-door", imgsize=84, width=4, height=10, originx=65, originy=25))
         #self.subgoals.append(SubGoal(name="bottom-left-ladder", imgsize=84, width=4, height=10, originx=10, originy=60))
-        #self.subgoals.append(SubGoal(name="bottom-right-ladder", imgsize=84, width=4, height=10, originx=69, originy=60))
+        self.subgoals.append(SubGoal(name="bottom-right-ladder", imgsize=84, width=4, height=10, originx=69, originy=60))
         #self.subgoals.append(SubGoal(name="key", imgsize=84, width=3, height=3, originx=6, originy=40))
 
         self.action_space = gym.spaces.Discrete(n=len(self.subgoals))
