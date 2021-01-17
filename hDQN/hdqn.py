@@ -74,10 +74,10 @@ class hDQN:
             if step_id % int(8e3) == 0:
                 self.controller.sync_models()
 
-            if step_id % int(100e3):
+            if step_id % int(100e3) == 0:
                 self.controller.save()
 
-            if step_id > int(100e3):
+            if step_id > int(100e3) == 0:
                 if step_id % 4 == 0:
                     self.controller.update()
 
